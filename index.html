@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Train Scheduler</title>
+    <!-- Bootstrap CSS CDN  -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/css/bootstrap.min.css" />
+
+    <!-- Font Awesome CSS Icons (For cool glyphicons) -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+    <!-- Firebase Script Tag-->
+
+    <script src="https://www.gstatic.com/firebasejs/5.2.0/firebase.js"></script>
+    <style>
+        .card-body a {
+            word-break: break-all;
+        }
+
+        .articleHeadline {
+            line-height: 1.5;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Main Bootstrap Search -->
+    <div class="container">
+
+        <!-- Jumbotron for Title -->
+        <div class="jumbotron" style="background-color: #20315A ; color: white;">
+            <h1 class="text-center">
+                <strong>
+                    <i class="fas fa-subway"></i> Train Station Schedule</strong>
+            </h1>
+        </div>
+        <!-- input table -->
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Train Name</th>
+                    <th scope="col">Destination</th>
+                    <th scope="col">Frequency (min)</th>
+                    <th scope="col">Next Arrival</th>
+                    <th scope="col">Minutes Away</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Insert movie rows here -->
+            </tbody>
+        </table>
+        <!-- Row for Searching New York Times -->
+        <div class="row">
+            <div class="col-sm-12">
+                <br>
+                <!-- First panel is for handling the search parameters -->
+                <div class="card">
+                    <div class="card-header">
+                        <strong>
+                            <i class="fas fa-train"></i> Add Train</strong>
+                    </div>
+                    <div class="card-body">
+
+                        <!-- Here we create an HTML Form for handling the inputs-->
+                        <form role="form" id="train-form">
+
+                            <!-- Here we create the text box for capturing the search term-->
+                            <div class="form-group">
+                                <label for="search">Train Name</label>
+                                <input type="text" class="form-control" id="train-name">
+                            </div>
+
+                            <!-- Here we capture the number of records that the user wants to retrieve  -->
+                            <div class="form-group">
+                                <label for="pwd">Destination</label>
+                                <input type="text" class="form-control" id="destination">
+                                </select>
+                            </div>
+
+                            <!-- Here we capture the Start Year Parameter-->
+                            <div class="form-group">
+                                <label for="start-date">First Train Time (HH:mm - military time</label>
+                                <input type="text" class="form-control" id="train-time">
+                            </div>
+
+                            <!-- Here we capture the End Year Parameter -->
+                            <div class="form-group">
+                                <label for="monthly-rate">Frequency</label>
+                                <input type="text" class="form-control" id="frequency">
+                            </div>
+
+
+
+                            <!-- Here we have our final submit button -->
+                            <button type="submit" class="btn btn-primary" id="run-search">
+                                <i class="search"></i> Submit</button>
+
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- jQuery JS -->
+    <script src="https://code.jquery.com/jquery.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Code to the Firebase -->
+
+    <script>
+        // Initialize Firebase
+        var config = {
+            apiKey: "AIzaSyCdj3lrExCiDpS2Cdv_0S-zQ-g93xggbrA",
+            authDomain: "trainscheduler-bb173.firebaseapp.com",
+            databaseURL: "https://trainscheduler-bb173.firebaseio.com",
+            projectId: "trainscheduler-bb173",
+            storageBucket: "trainscheduler-bb173.appspot.com",
+            messagingSenderId: "116219424189"
+        };
+        firebase.initializeApp(config);
+
+        // Create a variable to reference the database
+        var database = firebase.database();
+
+        // Initial Values
+        var name = "";
+        var role = "";
+        var startDate = "00:00";
+        var rate = "";
+        // var frequency;
+
+        // Capture Button Click
+        $("#train-form").on("submit", function (event) {
+            // Don't refresh the page!
+            event.preventDefault();
+
+            // YOUR TASK!!!
+            // Code in the logic for storing and retrieving the most recent user.
+            // Don't forget to provide initial data to your Firebase database.
+            name = $("#train-name").val();
+            role = $("#destination").val();
+            startDate = $("#train-time").val();
+            rate = $("#frequency").val();
+            
+
+
+            console.log(name);
+            console.log(role);
+            console.log(startDate);
+            console.log(rate);
+
+            database.ref().push({
+                name: name,
+                role: role,
+                startDate: startDate,
+                rate: rate,
+                // frequencyInput: frequencyInput,
+            });
+        });
+
+        database.ref().on("child_added", function (snapshot) {
+
+            // Log everything that's coming out of snapshot
+            console.log(snapshot.val());
+            console.log(snapshot.val().name);
+            console.log(snapshot.val().role);
+            console.log(snapshot.val().startDate);
+            console.log(snapshot.val().rate);
+            console.log(snapshot.val().frequency);
+
+            // Change the HTML to reflect
+            $("#train-name").text(snapshot.val().name);
+            $("#destination").text(snapshot.val().email);
+            $("#train-time").text(snapshot.val().age);
+            $("#frequency").text(snapshot.val().comment);
+            // $("#time-worked").text(snapshot.val().frequency);
+
+
+            // Get reference to existing tbody element, create a new table row element
+            var tBody = $("tbody");
+            var tRow = $("<tr>");
+
+            // Methods run on jQuery selectors return the selector they we run on
+            // This is why we can create and save a reference to a td in the same statement we update its text
+            var name = $("<td>").append(snapshot.val().name);
+            var role = $("<td>").append(snapshot.val().role);
+            var startDate = $("<td>").append(snapshot.val().startDate);
+            var rate = $("<td>").append(snapshot.val().rate);
+            // var frequency = $("<td>").append(snapshot.val().frequency);
+
+            // Append the newly created table data to the table row
+            tRow.append(name, role, startDate, rate);
+            // Append the table row to the table body
+            tBody.append(tRow);
+            // Handle the errors
+        }, function (errorObject) {
+            console.log("Errors handled: " + errorObject.code);
+        });
+
+</script>
+
+
+</body>
+
+</html>
+
+
+<!-- I needed to add the minutes away to Firebase in order for the "Minutes Away" to populate. I also needed to add the "moment" code 
+in order for the "Next Arrival" and "Minutes Away" to pupulate. The Code I would have used is:
+
+var trainTimeInput = moment($("#trainTimeInput").val().trim(), "HH:mm").subtract(10, "years").format("X");;
+		var frequencyInput = $("#frequencyInput").val().trim(); -->
